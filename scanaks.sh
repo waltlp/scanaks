@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #################
 #This script will gather logs from an AKS cluster. The goal is to collect those logs for troubleshooting purposes.
 #This script is work in progress. It is developed in best effort. Lots of improvements are expected.
@@ -16,13 +16,16 @@
 #Variables
 ##########
 # Ask for the Service Request number
-read -p "Enter your SERVICE REQUEST: " SERVICE_REQUEST
+printf "Enter your SERVICE REQUEST: "
+read -r SERVICE_REQUEST
 
 # Prompt the user to enter the RESOURCE_GROUP
-read -p "Enter the AKS CLUSTER RESOURCE GROUP: " RESOURCE_GROUP
+printf "Enter the AKS CLUSTER RESOURCE GROUP: "
+read -r RESOURCE_GROUP
 
 # Prompt the user to enter the CLUSTER_NAME
-read -p "Enter the AKS CLUSTER NAME: " CLUSTER_NAME
+printf "Enter the AKS CLUSTER NAME: "
+read -r CLUSTER_NAME
 
 NOW=$(date +%F_%H-%M-%S_%z)
 
@@ -32,10 +35,10 @@ RANDOMSTRING=$(LC_ALL=C tr </dev/urandom -dc '[:alpha:]' | head -c "${1:-4}")
 #####################
 
 # Create a directory to hold the logs
-mkdir ~/LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
+mkdir ~/LOGS_"${SERVICE_REQUEST}"_"${RANDOMSTRING}"
 
 # Move to the directory that will hold the logs
-cd ~/LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
+cd ~/LOGS_"${SERVICE_REQUEST}"_"${RANDOMSTRING}" || exit
 
 #General information
 ####################
@@ -50,40 +53,40 @@ kubectl version >kubectl-version.txt
 kubectl cluster-info >k_cluster-info.txt
 
 #Export details about the AKS cluster.
-az aks show -g ${RESOURCE_GROUP} -n ${CLUSTER_NAME} >az-aks-show_${NOW}.json
+az aks show -g "${RESOURCE_GROUP}" -n "${CLUSTER_NAME}" >az-aks-show_"${NOW}".json
 
 #Check out the existing worker nodes of the AKS cluster.
-kubectl get nodes -o wide >k_nodes_${NOW}.txt
+kubectl get nodes -o wide >k_nodes_"${NOW}".txt
 
 #Check out the existing pods of the AKS cluster.
-kubectl get pods -A -o wide >k_pods_${NOW}.txt
+kubectl get pods -A -o wide >k_pods_"${NOW}".txt
 
 #Create a dump of the events in the cluster.
-kubectl get events >k_get-events_${NOW}.txt
+kubectl get events >k_get-events_"${NOW}".txt
 
 #Check the CPU/memory of the nodes.
-kubectl top nodes >k_top_nodes_${NOW}.txt
+kubectl top nodes >k_top_nodes_"${NOW}".txt
 
 #Check the CPU/memory used by the containers.
-kubectl top pods -A >k_top_pods_${NOW}.txt
+kubectl top pods -A >k_top_pods_"${NOW}".txt
 
 #Check for all the Ingresses
-kubectl get ingress -A >k_ingress_${NOW}.txt
+kubectl get ingress -A >k_ingress_"${NOW}".txt
 
 #Check for all the existing kubernetes Services
-kubectl get svc -A >k_services_${NOW}.txt
+kubectl get svc -A >k_services_"${NOW}".txt
 
 #Check for endpoints
-kubectl get endpoints -A >k_endpoints_${NOW}.txt
+kubectl get endpoints -A >k_endpoints_"${NOW}".txt
 
 # Post script execution tasks
 #############################
 
 #Move to the parent directory
-cd ~
+cd ~ || exit
 
 #TAR and compress the directory that holds the logs
-tar -czf LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}.tar.gz LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
+tar -czf LOGS_"${SERVICE_REQUEST}"_"${RANDOMSTRING}".tar.gz LOGS_"${SERVICE_REQUEST}"_"${RANDOMSTRING}"
 
 #Announcements
 ##############
