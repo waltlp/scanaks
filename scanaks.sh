@@ -24,18 +24,18 @@ read -p "Enter the AKS CLUSTER RESOURCE GROUP: " RESOURCE_GROUP
 # Prompt the user to enter the CLUSTER_NAME
 read -p "Enter the AKS CLUSTER NAME: " CLUSTER_NAME
 
-NOW=`date +%F_%H-%M-%S_%z`
+NOW=$(date +%F_%H-%M-%S_%z)
 
-RANDOMSTRING=`cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-4} | head -n 1`
+RANDOMSTRING=$(cat /dev/urandom | LC_ALL=C tr -dc '[:alpha:]' | fold -w ${1:-4} | head -n 1)
 
 #A place for the logs
 #####################
 
 # Create a directory to hold the logs
-mkdir ~/LOGS_$SERVICE_REQUEST_$RANDOMSTRING
+mkdir ~/LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
 
 # Move to the directory that will hold the logs
-cd ~/LOGS_$SERVICE_REQUEST_$RANDOMSTRING
+cd ~/LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
 
 #General information
 ####################
@@ -44,7 +44,7 @@ cd ~/LOGS_$SERVICE_REQUEST_$RANDOMSTRING
 az version > azure-cli-version.txt
 
 #Determine the version of the installed "kubectl" utility.
-kubectl version --short > kubectl-version.txt
+kubectl version > kubectl-version.txt
 
 #Gather basic information about the AKS cluster.
 kubectl cluster-info > k_cluster-info.txt
@@ -83,7 +83,7 @@ kubectl get endpoints -A > k_endpoints_$NOW.txt
 cd ~
 
 #TAR and compress the directory that holds the logs
-tar -czf LOGS_$SERVICE_REQUEST_$RANDOMSTRING.tar.gz LOGS_$SERVICE_REQUEST_$RANDOMSTRING
+tar -czf LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}.tar.gz LOGS_${SERVICE_REQUEST}_${RANDOMSTRING}
 
 #Announcements
 ##############
