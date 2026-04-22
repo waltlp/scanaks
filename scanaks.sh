@@ -76,6 +76,14 @@ kubectl get svc -A > k_services_$NOW.txt
 #Check for endpoints
 kubectl get endpoints -A > k_endpoints_$NOW.txt
 
+#Check for Storage
+
+kubectl get pv > k_get-pv_$NOW.txt
+
+kubectl get pvc -A > k_get-pvc_$NOW.txt
+
+kubectl get sc -A > k_get-sc_$NOW.txt
+
 # Post script execution tasks
 #############################
 
